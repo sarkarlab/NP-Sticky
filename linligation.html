@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>NP-Sticky</title>
+<link rel="stylesheet" type="text/css" href="homestyle.css">
+<style>
+.nps-err { color:red; font-weight:bold; }
+.nps-result { background:#f5f9ff; border:1px solid #99b; padding:10px; margin-top:10px; }
+.nps-result table { border-collapse:collapse; }
+.nps-result th, .nps-result td { border:1px solid #888; padding:4px 8px; }
+</style>
+</head>
+
+<body>
+<div id="content">
+
+<h1><a href="index.html" style="background-color:#C0C0C0; color:black;">NP-Sticky: Model-Guided Ligation Calculator</a></h1>
+
+<ul>
+	<li><a href="about.html">Overview</a></li>
+	<li><a href="enzcompare.html">Type IIP vs. IIS Restriction Enzymes</a></li>
+	<li><a href="schematic.html">Model Schematic</a></li>
+	<li><a href="modelresults.html">Model Recommendations</a></li>
+</ul>
+<ul>
+	<li><a href="stickyfinder.html">Sticky End Finder</a></li>
+	<li><a href="stickyend.html">Sticky End Free Energy Calculator</a></li>
+</ul>
+<ul>
+	<li><a href="linligation.html" style="background-color:darkblue">Linear Ligation Calculator</a></li>
+	<li><a href="cirligation.html">Circular Ligation Calculator</a></li>
+</ul>
+
+
+<hr>
+<div id="white">
+
+<h2>Linear Ligation Calculator</h2>
+
+You can download this Excel worksheet to facilitate concentration conversion and ligation reaction setup:
+<a href="files/ligation_worksheet.xlsx" target="_blank" style="font-weight:normal;background-color:white;padding:0px;color:blue;">ligation_worksheet.xlsx</a>
+
+<h3>Product Distribution Prediction</h3>
+<p class="justify"><i>
+This linear ligation calculator can predict product distribution given the input concentrations of all species in the ligation reaction. For library assembly applications, the identity of the library-containing fragment can be specified in order to calculate how much of the input library is incorporated into full-length product.
+</i></p>
+
+<p><b>Please enter reaction conditions for 2-piece linear ligation reaction.</b></p>
+
+<form id="form-lp2" onsubmit="runLinPredict2(event)">
+
+<table border="2">
+    <col width="7%">
+	<col width="12%">
+	<col width="23%">
+	<col width="58%">
+    <tr>
+        <td rowspan="2">DNA 1</td>
+		<td rowspan="2"><input type="radio" name="lib_opt2" value="1">Valuable fragment</td>
+        <td><input type="radio" name="conctype_dna1_opt2" value="molar">Molar concentration</td>
+		<td class="left"><input type="text" name="ic_dna1_opt2" size="6">nM</td>
+	</tr>
+	<tr>
+        <td><input type="radio" name="conctype_dna1_opt2" value="mass">Mass concentration</td>
+		<td class="left"><input type="text" name="imc_dna1_opt2" size="6">ng/&#956;l&#160;&#160;&#160;
+			Size:<input type="text" name="bp_dna1_opt2" size="6">bp&#160;&#160;&#160;Volume:<input type="text" name="vol_dna1_opt2" size="6">&#956;l</td>
+    </tr>
+	<tr>
+        <td rowspan="2">DNA 2</td>
+		<td rowspan="2"><input type="radio" name="lib_opt2" value="2">Valuable fragment</td>
+        <td><input type="radio" name="conctype_dna2_opt2" value="molar">Molar concentration</td>
+		<td class="left"><input type="text" name="ic_dna2_opt2" size="6">nM</td>
+	</tr>
+	<tr>
+	    <td><input type="radio" name="conctype_dna2_opt2" value="mass">Mass concentration</td>
+        <td class="left"><input type="text" name="imc_dna2_opt2" size="6">ng/&#956;l&#160;&#160;&#160;
+	        Size:<input type="text" name="bp_dna2_opt2" size="6">bp&#160;&#160;&#160;Volume:<input type="text" name="vol_dna2_opt2" size="6">&#956;l</td>
+    </tr>
+	<tr>
+        <td colspan="2"></td>
+		<td colspan="2" class="left">Total volume of reaction:<input type="text" name="total_vol_opt2" size="6">&#956;l <i>(only needed when using mass concentrations)</i></td>
+    </tr>
+	<tr>
+	    <td colspan="2"><input type="radio" name="se_opt2" value="delG">Sticky end free energy</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><input type="text" name="delG12_opt2" size="6">kcal/mol&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+		                 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+						 <input type="submit" value="Submit"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><input type="radio" name="se_opt2" value="base">Sticky end overhang bases</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><select name="se12_l_opt2">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <input type="text" name="se12_opt2" size="16">
+						 <select name="se12_r_opt2">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <select name="se12_type_opt2">
+   						     <option value="5">5' overhang</option>
+							 <option value="3">3' overhang</option>
+						 </select>
+						 <input type="submit" value="Submit">
+		</td>
+	</tr>
+</table></br>
+
+</form></br>
+<div id="result-lp2" class="nps-result" style="display:none"></div></br>
+
+<p><b>Please enter reaction conditions for 3-piece linear ligation reaction.</b></p>
+
+<form id="form-lp3" onsubmit="runLinPredict3(event)">
+
+<table border="2">
+    <col width="7%">
+	<col width="12%">
+	<col width="23%">
+	<col width="48%">
+	<col width="10%">
+    <tr>
+        <td rowspan="2">DNA 1</td>
+		<td rowspan="2"><input type="radio" name="lib_opt3" value="1">Valuable fragment</td>
+        <td><input type="radio" name="conctype_dna1_opt3" value="molar">Molar concentration</td>
+		<td colspan="2" class="left"><input type="text" name="ic_dna1_opt3" size="6">nM</td>
+	</tr>
+	<tr>
+        <td><input type="radio" name="conctype_dna1_opt3" value="mass">Mass concentration</td>
+		<td colspan="2" class="left"><input type="text" name="imc_dna1_opt3" size="6">ng/&#956;l&#160;&#160;&#160;
+			Size:<input type="text" name="bp_dna1_opt3" size="6">bp&#160;&#160;&#160;Volume:<input type="text" name="vol_dna1_opt3" size="6">&#956;l</td>
+    </tr>
+	<tr>
+        <td rowspan="2">DNA 2</td>
+		<td rowspan="2"><input type="radio" name="lib_opt3" value="2">Valuable fragment</td>
+        <td><input type="radio" name="conctype_dna2_opt3" value="molar">Molar concentration</td>
+		<td colspan="2" class="left"><input type="text" name="ic_dna2_opt3" size="6">nM</td>
+	</tr>
+	<tr>
+	    <td><input type="radio" name="conctype_dna2_opt3" value="mass">Mass concentration</td>
+        <td colspan="2" class="left"><input type="text" name="imc_dna2_opt3" size="6">ng/&#956;l&#160;&#160;&#160;
+	        Size:<input type="text" name="bp_dna2_opt3" size="6">bp&#160;&#160;&#160;Volume:<input type="text" name="vol_dna2_opt3" size="6">&#956;l</td>
+    </tr>
+		<tr>
+        <td rowspan="2">DNA 3</td>
+		<td rowspan="2"><input type="radio" name="lib_opt3" value="3">Valuable fragment</td>
+        <td><input type="radio" name="conctype_dna3_opt3" value="molar">Molar concentration</td>
+		<td colspan="2" class="left"><input type="text" name="ic_dna3_opt3" size="6">nM</td>
+	</tr>
+	<tr>
+	    <td><input type="radio" name="conctype_dna3_opt3" value="mass">Mass concentration</td>
+        <td colspan="2" class="left"><input type="text" name="imc_dna3_opt3" size="6">ng/&#956;l&#160;&#160;&#160;
+	        Size:<input type="text" name="bp_dna3_opt3" size="6">bp&#160;&#160;&#160;Volume:<input type="text" name="vol_dna3_opt3" size="6">&#956;l</td>
+    </tr>
+	<tr>
+        <td colspan="2"></td>
+		<td colspan="3" class="left">Total volume of reaction:<input type="text" name="total_vol_opt3" size="6">&#956;l <i>(only needed when using mass concentrations)</i></td>
+    </tr>
+	<tr>
+	    <td rowspan="2" colspan="2"><input type="radio" name="se_opt3" value="delG">Sticky end free energy</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><input type="text" name="delG12_opt3" size="6">kcal/mol</td>
+		<td rowspan="2"><input type="submit" value="Submit"></td>
+	</tr>
+	<tr>
+	    <td>Between DNA 2 and 3</td>
+		<td class="left"><input type="text" name="delG23_opt3" size="6">kcal/mol
+	</tr>
+	<tr>
+	    <td rowspan="2" colspan="2"><input type="radio" name="se_opt3" value="base">Sticky end overhang bases</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><select name="se12_l_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <input type="text" name="se12_opt3" size="16">
+						 <select name="se12_r_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <select name="se12_type_opt3">
+   						     <option value="5">5' overhang</option>
+							 <option value="3">3' overhang</option>
+						 </select>
+		</td>
+		<td rowspan="2"><input type="submit" value="Submit"></td>
+	</tr>
+	<tr>
+	    <td>Between DNA 2 and 3</td>
+		<td class="left"><select name="se23_l_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <input type="text" name="se23_opt3" size="16">
+						 <select name="se23_r_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <select name="se23_type_opt3">
+						     <option value="5">5' overhang</option>
+							 <option value="3">3' overhang</option>
+						 </select>
+		</td>
+	</tr>
+</table>
+</form>
+<div id="result-lp3" class="nps-result" style="display:none"></div>
+</br>
+
+<h3>Ligation Recommendation</h3>
+
+<p class="justify"><i>
+Ligation incorporation and efficiency will be calculated over a range of concentrations and molar ratios to allow selection of optimal ligation conditions for specific applications.
+</i></p>
+
+<p><b>Please enter reaction conditions for 2-piece linear ligation reaction.</b></p>
+
+<form id="form-lr2" onsubmit="runLinRecom2(event)">
+<table border="2">
+	<col width="19%">
+	<col width="23%">
+	<col width="58%">
+    <tr>
+		<td rowspan="2">Valuable fragment:
+			<select name="lib_opt2">
+                <option value="1">DNA 1</option>
+                <option value="2" selected>DNA 2</option>
+            </select></td>
+		<td><input type="radio" name="conctype_lib_opt2" value="molar">Molar concentration</td>
+		<td class="left"><input type="text" name="ic_lib_opt2" size="6">nM</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="conctype_lib_opt2" value="mass">Mass concentration</td>
+		<td class="left"><input type="text" name="imc_lib_opt2" size="6">ng/&#956;l&#160;&#160;&#160;
+	        Size:<input type="text" name="bp_lib_opt2" size="6">bp
+	</tr>
+	<tr>
+	    <td><input type="radio" name="se_opt2" value="delG">Sticky end free energy</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><input type="text" name="delG12_opt2" size="6">kcal/mol&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+		                 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+						 <input type="submit" value="Submit"></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="se_opt2" value="base">Sticky end overhang bases</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><select name="se12_l_opt2">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <input type="text" name="se12_opt2" size="16">
+						 <select name="se12_r_opt2">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <select name="se12_type_opt2">
+   						     <option value="5">5' overhang</option>
+							 <option value="3">3' overhang</option>
+						 </select>
+						 <input type="submit" value="Submit">
+		</td>
+	</tr>
+</table>
+</form></br>
+<div id="result-lr2" class="nps-result" style="display:none">
+</div></br>
+
+
+<p><b>Please enter reaction conditions for 3-piece linear ligation reaction.</b></p>
+
+<form id="form-lr3" onsubmit="runLinRecom3(event)">
+<table border="2">
+	<col width="19%">
+	<col width="23%">
+	<col width="48%">
+	<col width="10%">
+    <tr>
+		<td rowspan="2">Valuable fragment:
+			<select name="lib_opt3">
+                <option value="1">DNA 1</option>
+                <option value="2" selected>DNA 2</option>
+				<option value="3">DNA 3</option>
+            </select></td>
+		<td><input type="radio" name="conctype_lib_opt3" value="molar">Molar concentration</td>
+		<td colspan="2" class="left"><input type="text" name="ic_lib_opt3" size="6">nM</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="conctype_lib_opt3" value="mass">Mass concentration</td>
+		<td colspan="2" class="left"><input type="text" name="imc_lib_opt3" size="6">ng/&#956;l&#160;&#160;&#160;
+	        Size:<input type="text" name="bp_lib_opt3" size="6">bp
+	</tr>
+	<tr>
+	    <td rowspan="2"><input type="radio" name="se_opt3" value="delG">Sticky end free energy</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><input type="text" name="delG12_opt3" size="6">kcal/mol</td>
+		<td rowspan="2"><input type="submit" value="Submit"></td>
+	</tr>
+	<tr>
+		<td>Between DNA 2 and 3</td>
+		<td class="left"><input type="text" name="delG23_opt3" size="6">kcal/mol</td>
+	</tr>
+	<tr>
+		<td rowspan="2"><input type="radio" name="se_opt3" value="base">Sticky end overhang bases</td>
+		<td>Between DNA 1 and 2</td>
+		<td class="left"><select name="se12_l_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <input type="text" name="se12_opt3" size="16">
+						 <select name="se12_r_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <select name="se12_type_opt3">
+   						     <option value="5">5' overhang</option>
+							 <option value="3">3' overhang</option>
+						 </select>
+		</td>
+		<td rowspan="2"><input type="submit" value="Submit"></td>
+	</tr>
+	<tr>
+		<td>Between DNA 2 and 3</td>
+		<td class="left"><select name="se23_l_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <input type="text" name="se23_opt3" size="16">
+						 <select name="se23_r_opt3">
+							 <option value="A">A</option><option value="T">T</option>
+							 <option value="C">C</option><option value="G">G</option>
+						 </select>
+						 <select name="se23_type_opt3">
+   						     <option value="5">5' overhang</option>
+							 <option value="3">3' overhang</option>
+						 </select>
+	</tr>
+</table>
+</form>
+<div id="result-lr3" class="nps-result" style="display:none">
+</div>
+
+</div>
+<hr>
+<a class="none" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is licensed under a <a class="none" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.<br/>
+The Python source codes are available here: <a href="files/linlig_predict2.cgi" class = "none" target="_blank" style="color:blue;">linlig_predict2.cgi</a>;
+<a href="files/linlig_predict3.cgi" class = "none" target="_blank" style="color:blue;">linlig_predict3.cgi</a>;
+<a href="files/linlig_recom2.cgi" class = "none" target="_blank" style="color:blue;">linlig_recom2.cgi</a>;
+<a href="files/linlig_recom3.cgi" class = "none" target="_blank" style="color:blue;">linlig_recom3.cgi</a>
+<hr>
+<p class="name">Last modified by Daphne Ng on Jan 14th, 2014</p>
+<script src="npsticky.js"></script>
+<script>
+// Shared helpers
+function getK(f, suffix, stackOpt) {
+  const seOpt = f['se_opt' + suffix].value;
+  if (seOpt === 'delG') {
+    const g = parseFloat(f['delG12_opt' + suffix].value);
+    if (!isFinite(g)) return { err: 'Please enter valid sticky end free energy.' };
+    return { K12: delGToK(g) };
+  } else {
+    const seq = (f['se12_opt' + suffix].value || '').trim().toUpperCase();
+    if (!seq) return { err: 'Please enter sticky end sequence.' };
+    const r = basesToNum(seq);
+    if (!r.flag) return { err: 'Sticky end sequence must be A/C/T/G only.' };
+    const l = f['se12_l_opt' + suffix].value;
+    const rr = f['se12_r_opt' + suffix].value;
+    const t = f['se12_type_opt' + suffix].value;
+    const g = delGCal(r.bUpNum, r.bLowNum, l, rr, t, stackOpt || 'forian', -6.3);
+    return { K12: delGToK(g) };
+  }
+}
+
+function getK23(f, suffix, stackOpt) {
+  const seOpt = f['se_opt' + suffix].value;
+  if (seOpt === 'delG') {
+    const g = parseFloat(f['delG23_opt' + suffix].value);
+    if (!isFinite(g)) return { err: 'Please enter valid free energy between DNA 2 and 3.' };
+    return { K23: delGToK(g) };
+  } else {
+    const seq = (f['se23_opt' + suffix].value || '').trim().toUpperCase();
+    if (!seq) return { err: 'Please enter sticky end 2–3 sequence.' };
+    const r = basesToNum(seq);
+    if (!r.flag) return { err: 'SE 2–3 must be A/C/T/G only.' };
+    const l = f['se23_l_opt' + suffix].value;
+    const rr = f['se23_r_opt' + suffix].value;
+    const t = f['se23_type_opt' + suffix].value;
+    const g = delGCal(r.bUpNum, r.bLowNum, l, rr, t, stackOpt || 'forian', -6.3);
+    return { K23: delGToK(g) };
+  }
+}
+
+function getMolarConc(f, dna, suffix) {
+  const ct = f['conctype_' + dna + '_opt' + suffix].value;
+  if (ct === 'molar') {
+    const c = parseFloat(f['ic_' + dna + '_opt' + suffix].value);
+    if (!isFinite(c) || c <= 0) return { err: 'Invalid molar concentration for ' + dna + '.' };
+    return { c };
+  } else {
+    const mc  = parseFloat(f['imc_' + dna + '_opt' + suffix].value);
+    const bp  = parseFloat(f['bp_' + dna + '_opt' + suffix].value);
+    const vol = parseFloat(f['vol_' + dna + '_opt' + suffix].value);
+    const tv  = parseFloat(f['total_vol_opt' + suffix].value);
+    if ([mc,bp,vol,tv].some(v => !isFinite(v) || v<=0)) return { err: 'Invalid mass concentration fields for ' + dna + '.' };
+    return { c: massToMolar(mc, bp, vol, tv) };
+  }
+}
+
+function getMolarConcLib(f, suffix) {
+  const ct = f['conctype_lib_opt' + suffix].value;
+  if (ct === 'molar') {
+    const c = parseFloat(f['ic_lib_opt' + suffix].value);
+    if (!isFinite(c) || c <= 0) return { err: 'Invalid molar concentration for library fragment.' };
+    return { c };
+  } else {
+    const mc = parseFloat(f['imc_lib_opt' + suffix].value);
+    const bp = parseFloat(f['bp_lib_opt' + suffix].value);
+    if ([mc,bp].some(v => !isFinite(v) || v<=0)) return { err: 'Invalid mass concentration fields for library fragment.' };
+    return { c: massToMolarStock(mc, bp) };
+  }
+}
+
+// ── 2-piece Predict ──────────────────────────────────────────────────────────
+function runLinPredict2(e) {
+  e.preventDefault();
+  const f = e.target;
+  const out = document.getElementById('result-lp2');
+  out.style.display = 'block';
+
+  const libEl = f.querySelector('input[name="lib_opt2"]:checked');
+  const libIdx = libEl ? parseInt(libEl.value) : 0;
+
+  const r1 = getMolarConc(f, 'dna1', '2');
+  if (r1.err) { out.innerHTML = '<p class="nps-err">' + r1.err + '</p>'; return; }
+  const r2 = getMolarConc(f, 'dna2', '2');
+  if (r2.err) { out.innerHTML = '<p class="nps-err">' + r2.err + '</p>'; return; }
+  const kRes = getK(f, '2');
+  if (kRes.err) { out.innerHTML = '<p class="nps-err">' + kRes.err + '</p>'; return; }
+
+  const res = solveLinear2(kRes.K12, r1.c, r2.c, libIdx);
+  if (!res) { out.innerHTML = '<p class="nps-err">No solution found.</p>'; return; }
+  const [cA, cB, cAB] = res.conc;
+  out.innerHTML = '<table><tr><th>Species</th><th>Molar conc (nM)</th></tr>' +
+    '<tr><td>DNA 1 (A)</td><td>' + cA.toFixed(2) + '</td></tr>' +
+    '<tr><td>DNA 2 (B)</td><td>' + cB.toFixed(2) + '</td></tr>' +
+    '<tr><td>Ligated product (A+B)</td><td>' + cAB.toFixed(2) + '</td></tr>' +
+    '</table>' +
+    (libIdx ? '<p>Incorporation: <b>' + (res.incorp).toFixed(1) + '%</b>. Efficiency: <b>' + (res.eff).toFixed(1) + '%</b>.</p>' : '');
+}
+
+// ── 3-piece Predict ──────────────────────────────────────────────────────────
+function runLinPredict3(e) {
+  e.preventDefault();
+  const f = e.target;
+  const out = document.getElementById('result-lp3');
+  out.style.display = 'block';
+
+  const libEl = f.querySelector('input[name="lib_opt3"]:checked');
+  const libIdx = libEl ? parseInt(libEl.value) : 0;
+
+  const r1 = getMolarConc(f, 'dna1', '3');
+  if (r1.err) { out.innerHTML = '<p class="nps-err">' + r1.err + '</p>'; return; }
+  const r2 = getMolarConc(f, 'dna2', '3');
+  if (r2.err) { out.innerHTML = '<p class="nps-err">' + r2.err + '</p>'; return; }
+  const r3 = getMolarConc(f, 'dna3', '3');
+  if (r3.err) { out.innerHTML = '<p class="nps-err">' + r3.err + '</p>'; return; }
+  const k12 = getK(f, '3');
+  if (k12.err) { out.innerHTML = '<p class="nps-err">' + k12.err + '</p>'; return; }
+  const k23 = getK23(f, '3');
+  if (k23.err) { out.innerHTML = '<p class="nps-err">' + k23.err + '</p>'; return; }
+
+  const res = solveLinear3(k12.K12, k23.K23, r1.c, r2.c, r3.c, libIdx);
+  if (!res) { out.innerHTML = '<p class="nps-err">No solution found. Try adjusting concentrations or free energies.</p>'; return; }
+  const x = res.conc;
+  out.innerHTML = '<table><tr><th>Species</th><th>Molar conc (nM)</th></tr>' +
+    '<tr><td>DNA 1 (A)</td><td>' + x[0].toFixed(2) + '</td></tr>' +
+    '<tr><td>DNA 2 (B)</td><td>' + x[1].toFixed(2) + '</td></tr>' +
+    '<tr><td>DNA 3 (C)</td><td>' + x[2].toFixed(2) + '</td></tr>' +
+    '<tr><td>A+B</td><td>' + x[3].toFixed(2) + '</td></tr>' +
+    '<tr><td>B+C</td><td>' + x[4].toFixed(2) + '</td></tr>' +
+    '<tr><td>Full product (A+B+C)</td><td>' + (x[5]+x[6]).toFixed(2) + '</td></tr>' +
+    '</table>' +
+    (libIdx ? '<p>Incorporation: <b>' + (res.incorp).toFixed(1) + '%</b>. Efficiency: <b>' + (res.eff).toFixed(1) + '%</b>.</p>' : '');
+}
+
+// ── 2-piece Recom ────────────────────────────────────────────────────────────
+function runLinRecom2(e) {
+  e.preventDefault();
+  const f   = e.target;
+  const out = document.getElementById('result-lr2');
+  out.style.display = 'block';
+
+  const libIdx = parseInt(f.lib_opt2.value);
+  const lc = getMolarConcLib(f, '2');
+  if (lc.err) { out.innerHTML = '<p class="nps-err">' + lc.err + '</p>'; return; }
+  const kRes = getK(f, '2');
+  if (kRes.err) { out.innerHTML = '<p class="nps-err">' + kRes.err + '</p>'; return; }
+
+  const libName = 'DNA ' + libIdx;
+  const res = computeLinRecom2(kRes.K12, lc.c, libIdx);
+
+  out.innerHTML =
+    'Percent incorporation is defined as [full-length product]/[library (' + libName + ')]<sub>input</sub>.<br/>' +
+    '<canvas id="canvas-lr2-incorp" width="540" height="420"></canvas><br/><br/>' +
+    'Percent efficiency is defined as 2 * [full-length product]/[all reactants]<sub>input</sub>.<br/>' +
+    '<canvas id="canvas-lr2-eff" width="540" height="420"></canvas>';
+
+  drawHeatmap(document.getElementById('canvas-lr2-incorp'),
+    'Percent Incorporation',
+    'Molar ratio of [flanking DNAs]/[library]',
+    'Library concentration (nM)',
+    res.ratio, res.libRange,
+    res.incorp,
+    true, '%');
+  drawHeatmap(document.getElementById('canvas-lr2-eff'),
+    'Percent Efficiency',
+    'Molar ratio of [flanking DNAs]/[library]',
+    'Library concentration (nM)',
+    res.ratio, res.libRange,
+    res.eff,
+    true, '%');
+}
+
+// ── 3-piece Recom ────────────────────────────────────────────────────────────
+function runLinRecom3(e) {
+  e.preventDefault();
+  const f   = e.target;
+  const out = document.getElementById('result-lr3');
+  out.style.display = 'block';
+
+  const libIdx = parseInt(f.lib_opt3.value);
+  const lc = getMolarConcLib(f, '3');
+  if (lc.err) { out.innerHTML = '<p class="nps-err">' + lc.err + '</p>'; return; }
+  const k12 = getK(f, '3');
+  if (k12.err) { out.innerHTML = '<p class="nps-err">' + k12.err + '</p>'; return; }
+  const k23 = getK23(f, '3');
+  if (k23.err) { out.innerHTML = '<p class="nps-err">' + k23.err + '</p>'; return; }
+
+  const libName = 'DNA ' + libIdx;
+  const res = computeLinRecom3(k12.K12, k23.K23, lc.c, libIdx);
+
+  out.innerHTML =
+    'Percent incorporation is defined as [full-length product]/[library (' + libName + ')]<sub>input</sub>.<br/>' +
+    '<canvas id="canvas-lr3-incorp" width="540" height="420"></canvas><br/><br/>' +
+    'Percent efficiency is defined as 3 * [full-length product]/[all reactants]<sub>input</sub>.<br/>' +
+    '<canvas id="canvas-lr3-eff" width="540" height="420"></canvas>';
+
+  drawHeatmap(document.getElementById('canvas-lr3-incorp'),
+    'Percent Incorporation',
+    'Molar ratio of [flanking DNAs]/[library]',
+    'Library concentration (nM)',
+    res.ratio, res.libRange,
+    res.incorp,
+    true, '%');
+  drawHeatmap(document.getElementById('canvas-lr3-eff'),
+    'Percent Efficiency',
+    'Molar ratio of [flanking DNAs]/[library]',
+    'Library concentration (nM)',
+    res.ratio, res.libRange,
+    res.eff,
+    true, '%');
+}
+</script>
+</body>
+</html>

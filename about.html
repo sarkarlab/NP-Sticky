@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>NP-Sticky</title>
+<link rel="stylesheet" type="text/css" href="homestyle.css">
+
+</head>
+
+<body>
+<div id="content">
+
+<h1><a href="index.html" style="background-color:#C0C0C0; color:black;">NP-Sticky: Model-Guided Ligation Calculator</a></h1>
+
+<ul>
+	<li><a href="about.html" style="background-color:darkblue">Overview</a></li>
+	<li><a href="enzcompare.html">Type IIP vs. IIS Restriction Enzymes</a></li>
+	<li><a href="schematic.html">Model Schematic</a></li>
+	<li><a href="modelresults.html">Model Recommendations</a></li>
+</ul>
+<ul>
+	<li><a href="stickyfinder.html">Sticky End Finder</a></li>
+	<li><a href="stickyend.html">Sticky End Free Energy Calculator</a></li>
+</ul>
+<ul>
+	<li><a href="linligation.html">Linear Ligation Calculator</a></li>
+	<li><a href="cirligation.html">Circular Ligation Calculator</a></li>
+</ul>
+
+<hr>
+
+<div id="white">
+
+<h2>DNA Ligation</h2>
+<p class="justify">
+DNA ligation is essential to many molecular biology manipulations. Maximizing the desired ligation product is especially important in DNA library construction for directed evolution experiments since library diversity is directly affected by ligation efficiency. The DNA ligation reaction, usually catalyzed by a DNA ligase, involves joining DNA molecule ends by creating a phosphodiester bond between the 3' hydroxyl and the 5' phosphate of adjacent nucleotides.
+</p>
+
+<p class="center"><img src="figures/lig_reaction.png" type="image/png" width="332" height="149.4"></p><br/>
+
+<p class="justify">
+For decades, guidelines for ligation have been generic, consisting of ranges for molar insert:vector ratio, ligation temperature, and total DNA concentration (e.g. see commercial vendors' recommendations for T4 DNA ligase), but any further optimization relies heavily on trial and error. There is no precise control over the extent of product formation because experimental procedures utilize ends with different properties (e.g., sequence, length, and palindromicity) and inserts/vectors of varying lengths. Also, since ligation and transformation are often coupled, the troubleshooting space is exponentially increased. Furthermore, optimization requires extensive work and has to be repeated anytime the experimental conditions are varied.
+</p>
+
+<h2>Ligation Model</h2>
+
+<p class="justify">
+To guide ligation optimization more rationally, we have developed an easily parameterized thermodynamic model that predicts product distributions based on input DNA concentrations and free energies of the ligation events. This model has been validated experimentally (Ng DTW and Sarkar CA. <i>Protein Eng. Des. Sel.</i> <b>25</b>, 669-678 (2012)). Based on our findings, we provide general insights into ligation and we outline guidelines for optimizing this reaction for both <i>in vivo</i> and <i>in vitro</i> display methodologies.
+</p>
+
+<h2>Ligation Calculator</h2>
+
+<p class="justify">
+We have also developed a ligation calculator based on the thermodynamic model described above. The calculator is an extension of the model, allowing characterization of custom-designed sticky ends. This calculator provides a means to rapidly identify optimum conditions for multi-parametric ligation reactions in order to maximize formation of the desired product and, thus, library size.
+</p>
+
+</div>
+
+<hr>
+
+<p class="name">Last modified by Daphne Ng on Jan 4th, 2014</p>
+
+</div>
+</body>
+</html>

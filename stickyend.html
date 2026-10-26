@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>NP-Sticky</title>
+<link rel="stylesheet" type="text/css" href="homestyle.css">
+<style>
+#result-eval, #result-fitting { background:#f5f9ff; border:1px solid #99b; padding:10px; margin-top:10px; }
+.nps-err { color:red; font-weight:bold; }
+</style>
+</head>
+
+<body>
+<div id="content">
+
+<h1><a href="index.html" style="background-color:#C0C0C0; color:black;">NP-Sticky: Model-Guided Ligation Calculator</a></h1>
+
+<ul>
+	<li><a href="about.html">Overview</a></li>
+	<li><a href="enzcompare.html">Type IIP vs. IIS Restriction Enzymes</a></li>
+	<li><a href="schematic.html">Model Schematic</a></li>
+	<li><a href="modelresults.html">Model Recommendations</a></li>
+</ul>
+<ul>
+	<li><a href="stickyfinder.html">Sticky End Finder</a></li>
+	<li><a href="stickyend.html" style="background-color:darkblue">Sticky End Free Energy Calculator</a></li>
+</ul>
+<ul>
+	<li><a href="linligation.html">Linear Ligation Calculator</a></li>
+	<li><a href="cirligation.html">Circular Ligation Calculator</a></li>
+</ul>
+
+<hr>
+<div id="white">
+<h2>Sticky End Free Energy Calculator</h2>
+
+<p class="justify">
+There are two methods to obtain the free energy of ligation:<br/>
+(1) Estimate using DNA thermodynamics (recommended for routine cloning).<br/>
+(2) Calculate from two-piece ligation experiments by measuring output product distribution (recommended for library assembly applications).<br/>
+The second method is more accurate for specific ligations conditions and is especially useful when the same sticky ends are used in multiple occasions (e.g., a standard display vector used for various applications).
+</p>
+
+<h3>By DNA Thermodynamics</h3>
+
+<p class="center"><img src="figures/se_eval_fig.png" type="image/png" width="300" height="75"></p>
+<p class= "justify"><i>
+In both examples above, the sticky end overhang is <b>TCCA</b> with a <b>C</b> before and an <b>A</b> after. (A sticky end overhang of <b>TGGA</b> with a <b>T</b> before and a <b>G</b> after would give the same result.) Mismatch scores are most accurate between sticky ends with the same number of overhang bases.
+</i></p>
+
+<p><b>Please input 1 or 2 sticky ends (5'&rarr;3' upper strand) into the form below.</b></p>
+
+<form id="form-eval" onsubmit="runEval(event)">
+
+Sticky end overhang 1: <input type="text" name="se1"><br/>
+
+1 base before (5' side) sticky end 1:
+<select name="se1l">
+    <option value="A">A</option><option value="T">T</option>
+    <option value="C">C</option><option value="G">G</option>
+</select>
+&#160&#160&#160&#160&#160
+
+1 base after (3' side) sticky end 1:
+<select name="se1r">
+    <option value="A">A</option><option value="T">T</option>
+    <option value="C">C</option><option value="G">G</option>
+</select><br/>
+
+<input type="radio" name="se1_type" value="5">5' overhang
+<input type="radio" name="se1_type" value="3">3' overhang<br/>
+<br/>
+
+Sticky end overhang 2: <input type="text" name="se2"><i>(optional)</i><br/>
+
+1 base before (5' side) sticky end 2:
+<select name="se2l">
+    <option value="A">A</option><option value="T">T</option>
+    <option value="C">C</option><option value="G">G</option>
+</select>
+&#160&#160&#160&#160&#160
+
+1 base after (3' side) sticky end 2:
+<select name="se2r">
+    <option value="A">A</option><option value="T">T</option>
+    <option value="C">C</option><option value="G">G</option>
+</select><br/>
+
+<input type="radio" name="se2_type" value="5">5' overhang
+<input type="radio" name="se2_type" value="3">3' overhang<br/><br/>
+
+Custom stacking energy
+<select name="stacking_opt">
+    <option value="forian">Fori&#225n et al.</option>
+    <option value="protozanova">Protozanova et al.</option>
+    <option value="off">Off</option>
+</select><br/>
+
+(Stacking energy is the stabilizing interaction between adjacent base pairs that forms when the nicks between DNA fragments are repaired. The default is from Fori&#225n et al. <i>J Phys Chem B</i>, <b>103</b>, 884-892 (1999); alternately, you can choose stacking energy from Protozanova et al. <i>J Mol Biol</i>, <b>342</b>, 775-785 (2004).)<br/><br/>
+
+<b><i>Optional:</i></b> Custom free energy for the repair of phosphodiester bonds (default is -6.3 kcal/mol)<br/>
+<input type="text" name="delG_lig" size="8">&#160kcal/mol<br/>
+
+<br/>
+<input type="submit" value="Submit">
+</form>
+<div id="result-eval"></div>
+<br/>
+
+<hr>
+
+<h3>By Experiments</h3>
+
+<p class="justify"><i>
+In the form below, please enter the experimental conditions and the results of 1-10 two-piece linear ligations experiments. The output mass ratio can be easily quantified by imaging the ligation products on an agarose gel. This algorithm calculates the sum of the squared residuals between model and experiment for a range of free energies. The free energy of the sticky end is the value that minimizes the sum of the squared residuals. A graph of the resulting residuals is provided to show if a true minimum is obtained.
+</i></p>
+
+<p><b>Please input experimental conditions (up to 10 different trials) into the form below.</b></p>
+
+<form id="form-fitting" onsubmit="runFitting(event)">
+
+Number of base pairs of DNA 1: <input type="text" name="bp1" size="8">
+&#160&#160&#160&#160&#160
+Number of base pairs of DNA 2: <input type="text" name="bp2" size="8"><br/>
+
+Number of overhang bases of sticky end:
+<select name="overhang">
+    <option value="2">2</option><option value="3">3</option>
+    <option value="4" selected>4</option><option value="5">5</option>
+</select><br/>
+
+<b><i>Optional:</i></b> Custom range of free energy:
+from<input type="text" name="g_low" size="8">&#160kcal/mol to
+<input type="text" name="g_high" size="8">&#160kcal/mol<br/><br/>
+
+<table border="2">
+    <tr>
+        <th rowspan="2">Experiment</th>
+        <th colspan="2">Input concentration (nM)</th>
+        <th colspan="3">Output mass ratio</th>
+    </tr>
+    <tr>
+        <td>DNA 1</td>
+        <td>DNA 2</td>
+        <td>DNA 1</td>
+        <td>DNA 2</td>
+        <td>DNA 1+2</td>
+    </tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="1">1</td>
+        <td><input type="text" name="ic_dna1_1" size="8"></td>
+        <td><input type="text" name="ic_dna2_1" size="8"></td>
+        <td><input type="text" name="om_dna1_1" size="8"></td>
+        <td><input type="text" name="om_dna2_1" size="8"></td>
+        <td><input type="text" name="om_dna12_1" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="2">2</td>
+        <td><input type="text" name="ic_dna1_2" size="8"></td>
+        <td><input type="text" name="ic_dna2_2" size="8"></td>
+        <td><input type="text" name="om_dna1_2" size="8"></td>
+        <td><input type="text" name="om_dna2_2" size="8"></td>
+        <td><input type="text" name="om_dna12_2" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="3">3</td>
+        <td><input type="text" name="ic_dna1_3" size="8"></td>
+        <td><input type="text" name="ic_dna2_3" size="8"></td>
+        <td><input type="text" name="om_dna1_3" size="8"></td>
+        <td><input type="text" name="om_dna2_3" size="8"></td>
+        <td><input type="text" name="om_dna12_3" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="4">4</td>
+        <td><input type="text" name="ic_dna1_4" size="8"></td>
+        <td><input type="text" name="ic_dna2_4" size="8"></td>
+        <td><input type="text" name="om_dna1_4" size="8"></td>
+        <td><input type="text" name="om_dna2_4" size="8"></td>
+        <td><input type="text" name="om_dna12_4" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="5">5</td>
+        <td><input type="text" name="ic_dna1_5" size="8"></td>
+        <td><input type="text" name="ic_dna2_5" size="8"></td>
+        <td><input type="text" name="om_dna1_5" size="8"></td>
+        <td><input type="text" name="om_dna2_5" size="8"></td>
+        <td><input type="text" name="om_dna12_5" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="6">6</td>
+        <td><input type="text" name="ic_dna1_6" size="8"></td>
+        <td><input type="text" name="ic_dna2_6" size="8"></td>
+        <td><input type="text" name="om_dna1_6" size="8"></td>
+        <td><input type="text" name="om_dna2_6" size="8"></td>
+        <td><input type="text" name="om_dna12_6" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="7">7</td>
+        <td><input type="text" name="ic_dna1_7" size="8"></td>
+        <td><input type="text" name="ic_dna2_7" size="8"></td>
+        <td><input type="text" name="om_dna1_7" size="8"></td>
+        <td><input type="text" name="om_dna2_7" size="8"></td>
+        <td><input type="text" name="om_dna12_7" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="8">8</td>
+        <td><input type="text" name="ic_dna1_8" size="8"></td>
+        <td><input type="text" name="ic_dna2_8" size="8"></td>
+        <td><input type="text" name="om_dna1_8" size="8"></td>
+        <td><input type="text" name="om_dna2_8" size="8"></td>
+        <td><input type="text" name="om_dna12_8" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="9">9</td>
+        <td><input type="text" name="ic_dna1_9" size="8"></td>
+        <td><input type="text" name="ic_dna2_9" size="8"></td>
+        <td><input type="text" name="om_dna1_9" size="8"></td>
+        <td><input type="text" name="om_dna2_9" size="8"></td>
+        <td><input type="text" name="om_dna12_9" size="8"></td>
+    <tr>
+    <tr>
+        <td><input type="checkbox" name="expt" value="10">10</td>
+        <td><input type="text" name="ic_dna1_10" size="8"></td>
+        <td><input type="text" name="ic_dna2_10" size="8"></td>
+        <td><input type="text" name="om_dna1_10" size="8"></td>
+        <td><input type="text" name="om_dna2_10" size="8"></td>
+        <td><input type="text" name="om_dna12_10" size="8"></td>
+    <tr>
+</table>
+</br>
+<input type="submit" value="Submit">
+</form>
+<div id="result-fitting"></div>
+</div>
+<hr>
+<a class="none" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is licensed under a <a class="none" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</br>
+The Python source codes are available here: <a href="files/se_eval.cgi" class = "none" target="_blank" style="color:blue;">se_eval.cgi</a>;
+<a href="files/se_fitting.cgi" class = "none" target="_blank" style="color:blue;">se_fitting.cgi</a>
+<hr>
+<p class="name">Last modified by Daphne Ng on Jan 14th, 2014</p>
+</div>
+<script src="npsticky.js"></script>
+<script>
+// ── SE Evaluation (thermodynamics) ─────────────────────────────────────────
+function runEval(e) {
+  e.preventDefault();
+  const f   = e.target;
+  const out = document.getElementById('result-eval');
+
+  const se1str   = (f.se1.value || '').trim().toUpperCase();
+  const se1l     = f.se1l.value;
+  const se1r     = f.se1r.value;
+  const se1tEl   = f.querySelector('input[name="se1_type"]:checked');
+  const se2str   = (f.se2.value || '').trim().toUpperCase();
+  const se2l     = f.se2l.value;
+  const se2r     = f.se2r.value;
+  const se2tEl   = f.querySelector('input[name="se2_type"]:checked');
+  const stackOpt = f.stacking_opt.value;
+  const delGLigStr = (f.delG_lig.value || '').trim();
+  const delGLig  = delGLigStr ? parseFloat(delGLigStr) : -6.3;
+
+  if (!se1str) { out.innerHTML = '<p class="nps-err">Sticky end 1 overhang is required.</p>'; return; }
+  const r1 = basesToNum(se1str);
+  if (!r1.flag) { out.innerHTML = '<p class="nps-err">Please only enter A/C/T/G for sticky end 1.</p>'; return; }
+  if (!se1tEl)  { out.innerHTML = '<p class="nps-err">Please select 5\' or 3\' overhang for sticky end 1.</p>'; return; }
+  if (delGLigStr && isNaN(delGLig)) { out.innerHTML = '<p class="nps-err">Invalid custom free energy.</p>'; return; }
+
+  const se1t   = se1tEl.value;
+  const delG1  = delGCal(r1.bUpNum, r1.bLowNum, se1l, se1r, se1t, stackOpt, delGLig);
+  const mm1    = delGMmCal(r1.bUpNum, r1.bLowNum, se1l, se1r, se1t, stackOpt, delGLig);
+
+  let html = seBlock('SE1', delG1, mm1);
+
+  if (se2str) {
+    if (!se2tEl) { out.innerHTML = '<p class="nps-err">Please select 5\' or 3\' overhang for sticky end 2.</p>'; return; }
+    const r2 = basesToNum(se2str);
+    if (!r2.flag) { out.innerHTML = '<p class="nps-err">Please only enter A/C/T/G for sticky end 2.</p>'; return; }
+    const se2t  = se2tEl.value;
+    const delG2 = delGCal(r2.bUpNum, r2.bLowNum, se2l, se2r, se2t, stackOpt, delGLig);
+    const mm2   = delGMmCal(r2.bUpNum, r2.bLowNum, se2l, se2r, se2t, stackOpt, delGLig);
+    html += seBlock('SE2', delG2, mm2);
+    html += '<b>Mismatch of sticky end 1 (SE1) with sticky end 2 (SE2):</b>';
+    if (se1t !== se2t) {
+      html += '<p>Different types of overhangs &mdash; no mismatch!</p>';
+    } else {
+      const mm12 = delG2SeMmCal(r1.bUpNum, r1.bLowNum, r2.bUpNum, r2.bLowNum,
+                                  se1l, se1r, se2l, se2r, se1t, stackOpt, delGLig);
+      html += mm12Table(mm12);
+    }
+  }
+
+  html += '<br/><p class="center"><img src="figures/web_SEcalc.png" width="309" height="115"/></p>';
+  out.innerHTML = html;
+}
+
+function mmRow(label, val) {
+  return '<tr><td>' + label + '</td><td>' + val.toFixed(2) + '</td></tr>';
+}
+
+function seBlock(name, delG, mm) {
+  const [uu, ll, uu_gap, ll_gap, ul_gap] = mm;
+  return '<b>' + name + ':</b><br/>The free energy of ' + name + ' is <b>' + delG.toFixed(2) +
+    ' kcal/mol</b>.<br/><table border="1">' +
+    '<tr><th>Sticky end mismatch</th><th>Free energy (kcal/mol)</th></tr>' +
+    mmRow(name + ' upper strand &mdash; ' + name + ' upper strand', uu) +
+    mmRow(name + ' lower strand &mdash; ' + name + ' lower strand', ll) +
+    mmRow(name + ' upper strand &mdash; ' + name + ' upper strand (1 nt gap)', uu_gap) +
+    mmRow(name + ' lower strand &mdash; ' + name + ' lower strand (1 nt gap)', ll_gap) +
+    mmRow(name + ' upper strand &mdash; ' + name + ' lower strand (1 nt gap)', ul_gap) +
+    '</table><br/>';
+}
+
+function mm12Table(mm) {
+  const [u1u2, l1l2, u1l2, l1u2, u1u2g, l1l2g, u1l2g, l1u2g] = mm;
+  return '<table border="1">' +
+    '<tr><th>Sticky end mismatch</th><th>Free energy (kcal/mol)</th></tr>' +
+    mmRow('SE1 upper &mdash; SE2 upper', u1u2) +
+    mmRow('SE1 lower &mdash; SE2 lower', l1l2) +
+    mmRow('SE1 upper &mdash; SE2 lower', u1l2) +
+    mmRow('SE1 lower &mdash; SE2 upper', l1u2) +
+    mmRow('SE1 upper &mdash; SE2 upper (1 nt gap)', u1u2g) +
+    mmRow('SE1 lower &mdash; SE2 lower (1 nt gap)', l1l2g) +
+    mmRow('SE1 upper &mdash; SE2 lower (1 nt gap)', u1l2g) +
+    mmRow('SE1 lower &mdash; SE2 upper (1 nt gap)', l1u2g) +
+    '</table>';
+}
+
+// ── SE Fitting (by experiments) ─────────────────────────────────────────────
+function runFitting(e) {
+  e.preventDefault();
+  const f   = e.target;
+  const out = document.getElementById('result-fitting');
+
+  const bp1 = parseInt(f.bp1.value);
+  const bp2 = parseInt(f.bp2.value);
+  if (!Number.isFinite(bp1) || !Number.isFinite(bp2) || bp1 <= 0 || bp2 <= 0) {
+    out.innerHTML = '<p class="nps-err">Please enter valid base pair counts for both DNA fragments.</p>'; return;
+  }
+
+  const overhang = parseInt(f.overhang.value);
+  const gLowStr  = (f.g_low.value || '').trim();
+  const gHighStr = (f.g_high.value || '').trim();
+  let gLow, gHigh;
+  if (gLowStr || gHighStr) {
+    gLow = parseFloat(gLowStr); gHigh = parseFloat(gHighStr);
+    if (!isFinite(gLow) || !isFinite(gHigh) || gLow >= gHigh) {
+      out.innerHTML = '<p class="nps-err">Invalid custom free energy range.</p>'; return;
+    }
+  } else {
+    [gLow, gHigh] = defaultGRange(overhang);
+  }
+
+  const checked = [...f.querySelectorAll('input[name="expt"]:checked')].map(el => el.value);
+  if (checked.length === 0) {
+    out.innerHTML = '<p class="nps-err">Please check at least one experiment.</p>'; return;
+  }
+
+  const icArr = [], omrArr = [];
+  for (const idx of checked) {
+    const c1  = parseFloat(f['ic_dna1_' + idx].value);
+    const c2  = parseFloat(f['ic_dna2_' + idx].value);
+    const m1  = parseFloat(f['om_dna1_' + idx].value);
+    const m2  = parseFloat(f['om_dna2_' + idx].value);
+    const m12 = parseFloat(f['om_dna12_' + idx].value);
+    if ([c1, c2, m1, m2, m12].some(v => !isFinite(v))) {
+      out.innerHTML = '<p class="nps-err">Missing or invalid data in experiment ' + idx + '.</p>'; return;
+    }
+    icArr.push([c1, c2]);
+    omrArr.push([m1 / m12, m2 / m12, 1.0]);
+  }
+
+  const result = fitDelG(icArr, omrArr, [bp1, bp2], gLow, gHigh);
+  out.innerHTML = '<p>The free energy of sticky end (best fit) is <b>' +
+    result.bestDelG.toFixed(2) + ' kcal/mol</b>.</p>' +
+    '<canvas id="fit-canvas" width="600" height="380"></canvas>';
+  drawLineChart(
+    document.getElementById('fit-canvas'),
+    'Residual vs Free Energy',
+    'Free energy of sticky end (kcal/mol)',
+    'Sum of squared residuals',
+    result.gSpace, result.residue, result.bestDelG
+  );
+}
+</script>
+</body>
+</html>

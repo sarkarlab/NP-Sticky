@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>NP-Sticky</title>
+<link rel="stylesheet" type="text/css" href="homestyle.css">
+<style>
+#result-finder { margin-top:10px; }
+#result-finder table { border-collapse:collapse; }
+#result-finder th, #result-finder td { border:1px solid #888; padding:4px 8px; }
+.nps-err { color:red; font-weight:bold; }
+</style>
+</head>
+
+<body>
+<div id="content">
+
+<h1><a href="index.html" style="background-color:#C0C0C0; color:black;">NP-Sticky: Model-Guided Ligation Calculator</a></h1>
+
+<ul>
+	<li><a href="about.html">Overview</a></li>
+	<li><a href="enzcompare.html">Type IIP vs. IIS Restriction Enzymes</a></li>
+	<li><a href="schematic.html">Model Schematic</a></li>
+	<li><a href="modelresults.html">Model Recommendations</a></li>
+</ul>
+<ul>
+	<li><a href="stickyfinder.html" style="background-color:darkblue">Sticky End Finder</a></li>
+	<li><a href="stickyend.html">Sticky End Free Energy Calculator</a></li>
+</ul>
+<ul>
+	<li><a href="linligation.html">Linear Ligation Calculator</a></li>
+	<li><a href="cirligation.html">Circular Ligation Calculator</a></li>
+</ul>
+
+<hr>
+<div id="white">
+<h2>Sticky End Finder</h2>
+
+<p class="justify">
+The sticky end finder is designed to find the optimal sticky ends from existing sequences. Sticky ends are ranked based on the discrimination between correct and misannealed free energies of ligation. A higher score indicates fewer misannealed structures.<br/>
+</p>
+
+<p class="center"><img src="figures/se_eval_fig.png" type="image/png" width="300" height="75"></p>
+<p class= "justify"><i>
+In both examples above, the sticky end overhang is <b>TCCA</b>. The sticky end finder is most accurate between sticky ends with the same number of overhang bases. One application of the sticky end finder is to identify or create the best cloning sites in a display vector.
+</i></p>
+
+<p><b>Please input DNA sequence (5'&rarr;3' upper strand) into the box below.</b></p>
+
+<form id="form-finder" onsubmit="runFinder(event)">
+
+<textarea name="dnaseq1" rows="5" cols="80"></textarea><br />
+
+Number of overhang bases of sticky end:
+<select name="overhang1">
+    <option value="2">2</option><option value="3">3</option>
+    <option value="4" selected>4</option><option value="5">5</option>
+</select><br/>
+
+<input type="radio" name="se1_type" value="5">5' overhang
+<input type="radio" name="se1_type" value="3">3' overhang<br/><br/>
+
+<p><b>Optional: Please input second DNA sequence (5'&rarr;3' upper strand) into the box below.</b></p>
+<textarea name="dnaseq2" rows="5" cols="80"></textarea><br />
+
+Number of overhang bases of sticky end:
+<select name="overhang2">
+    <option value="2">2</option><option value="3">3</option>
+    <option value="4" selected>4</option><option value="5">5</option>
+</select><br/>
+
+<input type="radio" name="se2_type" value="5">5' overhang
+<input type="radio" name="se2_type" value="3">3' overhang<br/><br/>
+
+Custom stacking energy
+<select name="stacking_opt">
+    <option value="forian">Fori&#225n et al.</option>
+    <option value="protozanova">Protozanova et al.</option>
+    <option value="off">Off</option>
+</select><br/>
+
+(Stacking energy is the stabilizing interaction between adjacent base pairs that forms when the nicks between DNA fragments are repaired. The default is from Fori&#225n et al. <i>J Phys Chem B</i>, <b>103</b>, 884-892 (1999); alternately, you can choose stacking energy from Protozanova et al. <i>J Mol Biol</i>, <b>342</b>, 775-785 (2004).)<br/><br/>
+
+<b><i>Optional:</i></b> Custom free energy for the repair of phosphodiester bonds (default is -6.3 kcal/mol)<br/>
+<input type="text" name="delG_lig" size="8">&#160kcal/mol<br/>
+
+<br/>
+
+<b>Output display</b>
+<select name="output_row">
+    <option value="5">Top 5</option>
+	<option value="10">Top 10</option>
+	<option value="20">Top 20</option>
+</select><br/><br/>
+
+<input type="submit" value="Submit">
+</form>
+<div id="result-finder"></div>
+</div>
+<hr>
+<a class="none" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is licensed under a <a class="none" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.<br/>
+The Python source code is available here: <a href="files/se_finder.cgi" class = "none" target="_blank" style="color:blue;">se_finder.cgi</a>
+<hr>
+<p class="name">Last modified by Daphne Ng on Jan 14th, 2014</p>
+</div>
+<script src="npsticky.js"></script>
+<script>
+function runFinder(e) {
+  e.preventDefault();
+  const f   = e.target;
+  const out = document.getElementById('result-finder');
+
+  const seq1    = (f.dnaseq1.value || '').replace(/\s/g, '').toUpperCase();
+  const oh1     = parseInt(f.overhang1.value);
+  const se1tEl  = f.querySelector('input[name="se1_type"]:checked');
+  const seq2    = (f.dnaseq2.value || '').replace(/\s/g, '').toUpperCase();
+  const oh2     = parseInt(f.overhang2.value);
+  const se2tEl  = f.querySelector('input[name="se2_type"]:checked');
+  const stack   = f.stacking_opt.value;
+  const gLigStr = (f.delG_lig.value || '').trim();
+  const gLig    = gLigStr ? parseFloat(gLigStr) : -6.3;
+  const topN    = parseInt(f.output_row.value);
+
+  if (!seq1) { out.innerHTML = '<p class="nps-err">Please enter a DNA sequence in box 1.</p>'; return; }
+  if (!se1tEl) { out.innerHTML = '<p class="nps-err">Please select 5\' or 3\' overhang type for sequence 1.</p>'; return; }
+  if (gLigStr && isNaN(gLig)) { out.innerHTML = '<p class="nps-err">Invalid custom free energy.</p>'; return; }
+
+  const hasSE2 = seq2.length > 0;
+  if (hasSE2 && !se2tEl) { out.innerHTML = '<p class="nps-err">Please select 5\' or 3\' overhang type for sequence 2.</p>'; return; }
+
+  const res1 = findStickyEnds(seq1, oh1, se1tEl.value, stack, gLig);
+
+  let html = '';
+  if (!hasSE2) {
+    // Single sequence: rank by score
+    const top = res1.slice(0, topN);
+    html = '<h3>Sticky ends from DNA sequence 1:</h3>' + seTable(top);
+  } else {
+    const res2 = findStickyEnds(seq2, oh2, se2tEl.value, stack, gLig);
+    // Always show individual rankings for both sequences
+    html = '<h3>Sticky ends from DNA sequence 1:</h3>' + seTable(res1.slice(0, topN));
+    html += '<h3>Sticky ends from DNA sequence 2:</h3>' + seTable(res2.slice(0, topN));
+
+    if (se1tEl.value !== se2tEl.value) {
+      // Different overhang types — no cross-mismatch possible
+      html += '<p>Different types of overhangs &mdash; no combined score.</p>';
+    } else {
+      // Same overhang type: compute cross-score for each pair
+      const pairs = [];
+      for (const a of res1) {
+        for (const b of res2) {
+          const d12Mm = delG2SeMmCal(a.seUp, a.seLow, b.seUp, b.seLow,
+                          a.seLeftStr, a.seRightStr, b.seLeftStr, b.seRightStr,
+                          a.seType, stack, gLig);
+          const score2 = scoreCal2Se(a.delG, a.delGMm, b.delG, b.delGMm, d12Mm);
+          pairs.push({ a, b, score2 });
+        }
+      }
+      pairs.sort((x, y) => y.score2 - x.score2);
+      html += '<h3>Combined score for sticky ends from DNA sequence 1 and 2:</h3>' + pairTable(pairs.slice(0, topN));
+    }
+  }
+  out.innerHTML = html;
+}
+
+function seTable(rows) {
+  let h = '<table><tr><th>Base number</th><th>Sticky end</th><th>Score</th></tr>';
+  rows.forEach((r) => {
+    h += '<tr><td>' + r.start + ' to ' + r.end + '</td>' +
+      '<td>' + r.seqStr + '</td>' +
+      '<td>' + r.score.toFixed(2) + '</td></tr>';
+  });
+  return h + '</table><br/>';
+}
+
+function pairTable(rows) {
+  let h = '<table><tr>' +
+    '<th>Base number 1</th><th>Sticky end 1</th>' +
+    '<th>Base number 2</th><th>Sticky end 2</th>' +
+    '<th>Score</th></tr>';
+  rows.forEach((r) => {
+    h += '<tr>' +
+      '<td>' + r.a.start + ' to ' + r.a.end + '</td><td>' + r.a.seqStr + '</td>' +
+      '<td>' + r.b.start + ' to ' + r.b.end + '</td><td>' + r.b.seqStr + '</td>' +
+      '<td>' + r.score2.toFixed(2) + '</td></tr>';
+  });
+  return h + '</table><br/>';
+}
+</script>
+</body>
+</html>

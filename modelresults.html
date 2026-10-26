@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>NP-Sticky</title>
+<link rel="stylesheet" type="text/css" href="homestyle.css">
+
+</head>
+
+<body>
+<div id="content">
+
+<h1><a href="index.html" style="background-color:#C0C0C0; color:black;">NP-Sticky: Model-Guided Ligation Calculator</a></h1>
+
+<ul>
+	<li><a href="about.html">Overview</a></li>
+	<li><a href="enzcompare.html">Type IIP vs. IIS Restriction Enzymes</a></li>
+	<li><a href="schematic.html">Model Schematic</a></li>
+	<li><a href="modelresults.html" style="background-color:darkblue">Model Recommendations</a></li>
+</ul>
+<ul>
+	<li><a href="stickyfinder.html">Sticky End Finder</a></li>
+	<li><a href="stickyend.html">Sticky End Free Energy Calculator</a></li>
+</ul>
+<ul>
+	<li><a href="linligation.html">Linear Ligation Calculator</a></li>
+	<li><a href="cirligation.html">Circular Ligation Calculator</a></li>
+</ul>
+
+<hr>
+
+<div id="white">
+
+<h2>Model Recommendations</h2>
+
+<p class="justify">
+We investigated model predictions for applications in which the insert is the valuable entity. For example, in <i>in vitro</i> directed evolution methods such as ribosome display and mRNA display, the amount of ligated insert (i.e., diversity-containing fragment) would directly influence library quality and diversity. For such applications, linear ligation is preferable to vector-insert ligation because no molecules would be lost in byproduct formation. The product could also be directly used, without the need for PCR amplification or transformation. Vector-insert ligation, on the other hand, represents the more common type of ligation, so we also investigated model predictions for this setup, again with the insert as the valuable fragment. These insights may be useful for <i>in vivo</i> directed evolution methods that require circular display vectors, including phage display, bacterial display, and yeast display.
+</p>
+
+<h3>Linear Ligation</h3>
+
+<p class="justify">
+Ligations were simulated and experimentally validated at different insert concentrations and across a range of reactant molar ratios with &#916G<sub>1</sub> = -12.00 kcal/mol and &#916G<sub>2</sub> = -12.23 kcal/mol. Percent incorporation is defined as full-length product divided by total insert added, while ligation efficiency is defined as full-length product divided by the sum of all reactants. Based on these simulation results, it is recommended that, for high incorporation of insert and maximal ligation efficiency, the two sticky end sites should be designed to have &#916G values that are as similar and as negative as possible (i.e., match the number of G/C and A/T base-pairs on the two sticky ends with no more than two A/T base-pairs per sticky end). In three-piece linear ligation reactions in which the middle piece (insert) needs to be maximally incorporated, the upstream and downstream pieces should be used in as much excess as possible.
+</p>
+
+<p class="center"><img src="figures/linlig_model_predict.png" type="image/png" width="411" height="141"></p>
+
+<h3>Circular Ligation</h3>
+
+<p class="justify">
+Ligations were simulated and experimentally validated across a range of vector concentrations and insert:vector molar ratios with &#916G<sub>1</sub> of -12.00 kcal/mol and &#916G<sub>2</sub> of -12.23 kcal/mol. Percent incorporation is defined as circularized vector-insert product divided by total insert added, ligation efficiency is defined as circularized vector-insert product divided by the sum of the reactants, and accuracy is defined as the circularized vector-insert product divided by the sum of all circular products. Based on the results, it is recommended that for high insert incorporation, maximal ligation efficiency, and best accuracy, the insert:vector ratio should be 1 or slightly less and the vector concentration should be kept close to the K values, where K = exp(&#916G/RT).
+</p>
+
+<p class="center"><img src="figures/cirlig_model_predict.png" type="image/png" width="603" height="349"></p>
+
+</div>
+
+<hr>
+
+<p class="name">Last modified by Daphne Ng on Jan 4th, 2014</p>
+
+</div>
+</body>
+</html>
